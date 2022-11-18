@@ -116,16 +116,26 @@ public class PayBill extends JFrame implements ActionListener{
                 }catch(Exception e){}
             }
         });
-        
-        b1 = new JButton("Pay");
-        b1.setBounds(100, 460, 100, 25);
-        add(b1);
+
+        if(l15.getText().equalsIgnoreCase("paid")){
+            b1= new JButton("Already Paid");
+            b1.setBounds(100, 460, 100, 25);
+            b1.disable();
+            b1.setBackground(Color.GREEN);
+            b1.setForeground(Color.BLACK);
+            add(b1);
+        }else{
+            b1= new JButton("Pay");
+            b1.setBounds(100, 460, 100, 25);
+            add(b1);
+            b1.setBackground(Color.BLACK);
+            b1.setForeground(Color.WHITE);
+        }
         b2 = new JButton("Back");
         b2.setBounds(230, 460, 100, 25);
         add(b2);
         
-        b1.setBackground(Color.BLACK);
-        b1.setForeground(Color.WHITE);
+
 
         b2.setBackground(Color.BLACK);
         b2.setForeground(Color.WHITE);
@@ -143,12 +153,16 @@ public class PayBill extends JFrame implements ActionListener{
         getContentPane().setBackground(Color.WHITE);        
     }
     public void actionPerformed(ActionEvent ae){
-        if(ae.getSource() == b1){
+        if((ae.getSource() == b1) && (b1.getText().equalsIgnoreCase("Pay"))){
             try{
                 Conn c = new Conn();
-                c.conn().executeQuery("update bill status = 'Paid' where meter = '"+meter+"' AND month = '"+c1.getSelectedItem()+"'");
+
+                c.conn().executeUpdate("update bill set status = 'Paid' where meter = '962975' AND month = 'January'");
                 
-            }catch(Exception e){}
+            }catch(Exception e){
+                System.out.println(e.getMessage());
+            }
+
             this.setVisible(false);
             new Paytm(meter).setVisible(true);
 
