@@ -1,48 +1,52 @@
 package Electricity;
 
-import java.awt.*;
-import java.awt.event.*;
 import javax.swing.*;
-import java.sql.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.sql.ResultSet;
 
-public class PayBill extends JFrame implements ActionListener{
-    JLabel l1,l2,l3,l4,l5, l6;
+public class PayBill extends JFrame implements ActionListener {
+    JLabel l1, l2, l3, l4, l5, l6;
     JLabel l11, l12, l13, l14, l15;
     JTextField t1;
-    Choice c1,c2;
-    JButton b1,b2;
+    Choice c1, c2;
+    JButton b1, b2;
     String meter;
-    PayBill(String meter){
+
+    PayBill(String meter) {
         this.meter = meter;
         setLayout(null);
-        
+
         setBounds(550, 220, 900, 600);
-        
+
         JLabel title = new JLabel("Electricity Bill");
         title.setFont(new Font("Tahoma", Font.BOLD, 24));
         title.setBounds(120, 5, 400, 30);
         add(title);
-        
+
         l1 = new JLabel("Meter No");
         l1.setBounds(35, 80, 200, 20);
         add(l1);
-        
+
         JLabel l11 = new JLabel();
         l11.setBounds(300, 80, 200, 20);
         add(l11);
-        
+
         JLabel l2 = new JLabel("Name");
         l2.setBounds(35, 140, 200, 20);
         add(l2);
-        
+
         JLabel l12 = new JLabel();
         l12.setBounds(300, 140, 200, 20);
         add(l12);
-        
+
         l3 = new JLabel("Month");
         l3.setBounds(35, 200, 200, 20);
         add(l3);
-        
+
         c1 = new Choice();
         c1.setBounds(300, 200, 200, 20);
         c1.add("January");
@@ -58,121 +62,127 @@ public class PayBill extends JFrame implements ActionListener{
         c1.add("November");
         c1.add("December");
         add(c1);
-        
-        
+
+
         l4 = new JLabel("Units");
         l4.setBounds(35, 260, 200, 20);
         add(l4);
-        
+
         JLabel l13 = new JLabel();
         l13.setBounds(300, 260, 200, 20);
         add(l13);
-        
+
         l5 = new JLabel("Total Bill");
         l5.setBounds(35, 320, 200, 20);
         add(l5);
-        
+
         JLabel l14 = new JLabel();
         l14.setBounds(300, 320, 200, 20);
         add(l14);
-        
+
         l6 = new JLabel("Status");
-        l6.setBounds(35, 380, 200, 20);
+        l6.setBounds(35, 400, 200, 20);
         add(l6);
-        
+
         JLabel l15 = new JLabel();
         l15.setBounds(300, 380, 200, 20);
-        l15.setForeground(Color.RED);
+        l15.setForeground(Color.BLACK);
         add(l15);
-        
-        
-        
-        try{
+
+
+        try {
             Conn c = new Conn();
-            ResultSet rs = c.conn().executeQuery("select * from customer where meter = '"+meter+"'");
-            while(rs.next()){
+            ResultSet rs = c.conn().executeQuery("select * from customer where meter = '" + meter + "'");
+            while (rs.next()) {
                 l11.setText(rs.getString("meter"));
                 l12.setText(rs.getString("name"));
             }
-            rs = c.conn().executeQuery("select * from bill where meter = '"+meter+"' AND month = 'January' ");
-            while(rs.next()){
+            rs = c.conn().executeQuery("select * from bill where meter = '" + meter + "' AND month = '" + c1.getSelectedItem() + "'");
+            while (rs.next()) {
                 l13.setText(rs.getString("units"));
                 l14.setText(rs.getString("total_bill"));
                 l15.setText(rs.getString("status"));
             }
-        }catch(Exception e){}
-        
-        c1.addItemListener(new ItemListener(){
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        c1.addItemListener(new ItemListener() {
             @Override
-            public void itemStateChanged(ItemEvent ae){
-                try{
+            public void itemStateChanged(ItemEvent ae) {
+                try {
                     Conn c = new Conn();
-                    ResultSet rs = c.conn().executeQuery("select * from bill where meter = '"+meter+"' AND month = '"+c1.getSelectedItem()+"'");
-                    while(rs.next()){
+                    ResultSet rs = c.conn().executeQuery("select * from bill where meter = '" + meter + "' AND month = '" + c1.getSelectedItem() + "'");
+                    l13.setText("");
+                    l14.setText("");
+                    l15.setText("");
+                    while (rs.next()) {
                         l13.setText(rs.getString("units"));
                         l14.setText(rs.getString("total_bill"));
                         l15.setText(rs.getString("status"));
                     }
-                }catch(Exception e){}
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
         });
 
-        if(l15.getText().equalsIgnoreCase("paid")){
-            b1= new JButton("Already Paid");
-            b1.setBounds(100, 460, 100, 25);
-            b1.disable();
-            b1.setBackground(Color.GREEN);
-            b1.setForeground(Color.BLACK);
-            add(b1);
-        }else{
-            b1= new JButton("Pay");
-            b1.setBounds(100, 460, 100, 25);
-            add(b1);
-            b1.setBackground(Color.BLACK);
-            b1.setForeground(Color.WHITE);
-        }
+
+        b1 = new JButton("Pay");
+        b1.setBounds(100, 460, 100, 25);
+        b1.setBackground(Color.BLACK);
+        b1.setForeground(Color.WHITE);
+        add(b1);
+
+
         b2 = new JButton("Back");
         b2.setBounds(230, 460, 100, 25);
         add(b2);
-        
-
-
         b2.setBackground(Color.BLACK);
         b2.setForeground(Color.WHITE);
-        
+
         ImageIcon i1 = new ImageIcon(ClassLoader.getSystemResource("icon/bill.png"));
-        Image i2 = i1.getImage().getScaledInstance(600, 300,Image.SCALE_DEFAULT);
+        Image i2 = i1.getImage().getScaledInstance(600, 300, Image.SCALE_DEFAULT);
         ImageIcon i3 = new ImageIcon(i2);
         JLabel l21 = new JLabel(i3);
         l21.setBounds(400, 120, 600, 300);
         add(l21);
-        
+
         b1.addActionListener(this);
         b2.addActionListener(this);
-        
-        getContentPane().setBackground(Color.WHITE);        
-    }
-    public void actionPerformed(ActionEvent ae){
-        if((ae.getSource() == b1) && (b1.getText().equalsIgnoreCase("Pay"))){
-            try{
-                Conn c = new Conn();
 
-                c.conn().executeUpdate("update bill set status = 'Paid' where meter = '962975' AND month = 'January'");
-                
-            }catch(Exception e){
-                System.out.println(e.getMessage());
+        getContentPane().setBackground(Color.WHITE);
+    }
+
+    public void actionPerformed(ActionEvent ae) {
+        if ((ae.getSource() == b1) && !l5.getText().isBlank()) {
+
+                try {
+                    Conn c = new Conn();
+
+                    c.conn().executeUpdate("update bill set status = 'Paid' where meter = '" + meter + "' AND month = '" + c1.getSelectedItem() + "'");
+
+                } catch (Exception e) {
+                    System.out.println(e.getMessage());
+                }
+
+                this.setVisible(false);
+                new Paytm(meter).setVisible(true);
             }
 
-            this.setVisible(false);
-            new Paytm(meter).setVisible(true);
 
-        }else if(ae.getSource()== b2){
+        else if (ae.getSource() == b2) {
             this.setVisible(false);
-        }        
+        }
+        else{
+            JOptionPane.showMessageDialog(null, "Bill is not generated yet!!!!");
+        }
     }
-    
-       
-    public static void main(String[] args){
+
+
+    public static void main(String[] args) {
         new PayBill("").setVisible(true);
     }
 }
